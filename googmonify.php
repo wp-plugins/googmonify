@@ -5,7 +5,7 @@ Plugin URI: http://www.gara.com/projects/googmonify/
 Description: Add the ability to drop product links into your blog posts
 Author: Gary Keorkunian
 Author URI: http://www.gara.com/
-Version: 0.3
+Version: 0.5
 
 Copyright 2008 GARA Systems, Inc.
 
@@ -28,6 +28,10 @@ Version		Date		Author		Description
 0.2			20080229	Gary		Added Admin Options page
 0.3			20080301	Gary		Enhanced Options Page
 									Cleaned up comments
+0.4			20080302	Gary		Eliminated redundant function calls
+									Added confirmation message on Option Save
+0.5			20080303	Gary		Added options to include Google Analytics 
+									scripts in the Blog footer.
 
 SEE THE README.TXT FOR INSTRUCTIONS
 
@@ -42,23 +46,6 @@ $googmonify_options["Limit"]=3;
 if(!isset($googmonify_count))
 	$googmonify_count=0;
 
-
-// Check Content for Googmonify tags
-function isGoogmonified($content)
-{
-
-	global $post, $page, $pages, $single;
-
-	if ($page > count($pages))
-		$page = count($pages);
-        $post_content = $pages[$page-1];
-
-	if (strpos($post_content, '[googmonify]') !== false)
-		return true;
-
-	return false;
-
-}
 
 // Retrieve Googmonify Options from the WordPress DB
 function googmonifyGetOptions()
@@ -134,20 +121,25 @@ function googmonifyContent($content)
 	return $new_content;
 }
 
-// Googmonify the Post
-function googmonifyPost($content)
+// Add Amazon Context Ads script
+function googmonifyAnalytics()
 {
-	if (!isGoogmonified($content))
-		return $content;
-
-	return googmonifyContent($content);
+	if(get_option('googmonify_Analytics')=="1")
+	{
+?>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("<? echo  get_option('googmonify_AID'); ?>");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+<?
+	}
 }
 
-// Add Content Action
-if(function_exists('add_action'))
-{
-	add_action('the_content', 'googmonifyPost');
-}
 
 // Admin Options Page
 function googmonifyOptionsPage()
@@ -155,11 +147,6 @@ function googmonifyOptionsPage()
 	$pid="";
 	$limit=0;
 
-?>
-	<div class="wrap">
-		<h2>Googmonify</h2>
-<?
-	
 	if(isset($_POST['GoogmonifyUpdate']))
 	{
 		$pid=$_POST["PID"];
@@ -168,37 +155,61 @@ function googmonifyOptionsPage()
 			$limit=3;
 		else
 			$limit=$_POST["Limit"];
+		
+		$analytics=$_POST['Analytics'];
+		$aid=$_POST['AID'];
 			
 		update_option('googmonify_PID', $pid);
 		update_option('googmonify_Limit', $limit);
+		update_option('googmonify_Analytics', $analytics);
+		update_option('googmonify_AID', $aid);
+		
+?>
+<div class="updated fade" id="message" style="background-color: rgb(207, 235, 247);"><p><strong>Options saved.</strong></p></div>
+<?
 	}
 	else
 	{
 		$pid=get_option('googmonify_PID');
 		$limit=get_option('googmonify_Limit');
 		if(!is_numeric($limit)) $limit=3;
+		$analytics=get_option('googmonify_Analytics');
+		$aid=get_option('googmonify_AID');
 	}
 
 ?>
+	<div class="wrap">
+		<h2>Googmonify</h2>
 		<form method="POST">
-			<table>
-				<tr>
-					<td>Google AdSense Publisher ID:</td>
+			<table class="optiontable">
+				<tr valign="top">
+					<th>Google AdSense Publisher ID:</th>
 					<td><input id="PID" name="PID" type="text" value="<? echo $pid; ?>"></td>
 				</tr>
-				<tr>
-					<td>Ad Limit:</td>
-					<td><input id= "Limit" name="Limit" type="text" value="<? echo $limit; ?>"><br>
-					<small>Google AdSense allows only 3 ad units per page.  If you include ad units in other parts of your blog theme, reduce this limit accordingly.</small>
+				<tr valign="top">
+					<th>Ad Limit:</th>
+					<td><input id= "Limit" name="Limit" type="text" value="<? echo $limit; ?>" size="5"><br>
+					Google AdSense allows only 3 ad units per page.  If you include ad units in other parts of your blog theme, you should reduce this limit accordingly.
 					</td>
 				</tr>
 				<tr>
-					<td>&nbsp;</td>
-					<td><input name="GoogmonifyUpdate" type="submit" value="Update"></td>
+					<th colspan="2"><hr></th>
+				</tr>
+				<tr>
+					<th>Google Analytics</th>
+					<td>
+					<input type="checkbox" id="Analytics" name="Analytics" value="1" <? echo $analytics ? 'checked' : ''; ?>> Include Google Analytics scripts</td>
+				</tr>
+				<tr valign="top">
+					<th>Tracking ID:</th>
+					<td><input id="AID" name="AID" type="text" value="<? echo $aid; ?>"> <br>
+					The Tracking ID includes your account ID plus a site number (i.e. AB-0000000-1).<br>
+					You can find this value from the Tracking Code page on Google Analytics.</td>
 				</tr>
 			</table>
+			<p class="submit"><input name="GoogmonifyUpdate" type="submit" value="Update Options &raquo;"></p>
 		</form>
-		<h3>Googmonify Tags</h3>
+		<h3>Markup Tags</h3>
 		<p>To include a Google AdSense ad in your post simply add 
 		the following googmonify tag set in the location where you 
 		want the ad:</p>
@@ -231,6 +242,12 @@ function googmonifyAdminSetup()
 	add_options_page('Googmonify', 'Googmonify', 8, basename(__FILE__), 'googmonifyOptionsPage');	
 }
 
-add_action('admin_menu', 'googmonifyAdminSetup');
+// Add Googmonify Action
+if(function_exists('add_action'))
+{
+	add_action('the_content', 'googmonifyContent');
+	add_action('wp_footer', 'googmonifyAnalytics');
+	add_action('admin_menu', 'googmonifyAdminSetup');
+}
 	
 ?>
