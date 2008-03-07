@@ -9,9 +9,9 @@ Version: 0.5
 
 == Description ==
 
-Googmonify lets you insert Google AdSense ad units into your posts with easy to use tag sets.
+Googmonify lets you insert Google AdSense ad units into your posts with easy to use tag sets (requires a Google AdSense account).
 
-Googmonify can also insert your Google Analytics tracking code every page on your blog help keep accurate statistics.
+Googmonify can also insert your Google Analytics tracking code in to every page on your blog help so you can keep accurate statistics (requires a Google Analytics account).
 
 Googmonify Your Blog Today!!
 
