@@ -5,7 +5,7 @@ Plugin URI: http://www.gara.com/projects/googmonify/
 Description: Add the ability to drop product links into your blog posts
 Author: Gary Keorkunian
 Author URI: http://www.gara.com/
-Version: 0.5
+Version: 0.5.1
 
 Copyright 2008 GARA Systems, Inc.
 
