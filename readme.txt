@@ -5,7 +5,7 @@ Tags: widget, google, adsense, ad, ads, monetize, analytics, statistics, stats
 Requires at least: 2.0.2
 Tested up to: 2.0.2
 Stable tag: trunk
-Version: 0.5
+Version: 0.5.1
 
 == Description ==
 

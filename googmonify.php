@@ -32,6 +32,9 @@ Version		Date		Author		Description
 									Added confirmation message on Option Save
 0.5			20080303	Gary		Added options to include Google Analytics 
 									scripts in the Blog footer.
+0.5.1		20080313	Gary		Replaced short tags with long tags for max
+									compatibility with PHP5
+
 
 SEE THE README.TXT FOR INSTRUCTIONS
 
@@ -132,11 +135,11 @@ var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "htt
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">
-var pageTracker = _gat._getTracker("<? echo  get_option('googmonify_AID'); ?>");
+var pageTracker = _gat._getTracker("<?php echo  get_option('googmonify_AID'); ?>");
 pageTracker._initData();
 pageTracker._trackPageview();
 </script>
-<?
+<?php
 	}
 }
 
@@ -166,7 +169,7 @@ function googmonifyOptionsPage()
 		
 ?>
 <div class="updated fade" id="message" style="background-color: rgb(207, 235, 247);"><p><strong>Options saved.</strong></p></div>
-<?
+<?php
 	}
 	else
 	{
@@ -184,25 +187,25 @@ function googmonifyOptionsPage()
 			<table class="optiontable">
 				<tr valign="top">
 					<th>Google AdSense Publisher ID:</th>
-					<td><input id="PID" name="PID" type="text" value="<? echo $pid; ?>"></td>
+					<td><input id="PID" name="PID" type="text" value="<?php echo $pid; ?>"></td>
 				</tr>
 				<tr valign="top">
 					<th>Ad Limit:</th>
-					<td><input id= "Limit" name="Limit" type="text" value="<? echo $limit; ?>" size="5"><br>
+					<td><input id= "Limit" name="Limit" type="text" value="<?php echo $limit; ?>" size="5"><br>
 					Google AdSense allows only 3 ad units per page.  If you include ad units in other parts of your blog theme, you should reduce this limit accordingly.
 					</td>
 				</tr>
 				<tr>
 					<th colspan="2"><hr></th>
 				</tr>
-				<tr>
+				<tr valign="top">
 					<th>Google Analytics</th>
 					<td>
-					<input type="checkbox" id="Analytics" name="Analytics" value="1" <? echo $analytics ? 'checked' : ''; ?>> Include Google Analytics scripts</td>
+					<input type="checkbox" id="Analytics" name="Analytics" value="1" <?php echo $analytics ? 'checked' : ''; ?>> Include Google Analytics scripts</td>
 				</tr>
 				<tr valign="top">
 					<th>Tracking ID:</th>
-					<td><input id="AID" name="AID" type="text" value="<? echo $aid; ?>"> <br>
+					<td><input id="AID" name="AID" type="text" value="<?php echo $aid; ?>"> <br>
 					The Tracking ID includes your account ID plus a site number (i.e. AB-0000000-1).<br>
 					You can find this value from the Tracking Code page on Google Analytics.</td>
 				</tr>
@@ -233,7 +236,7 @@ function googmonifyOptionsPage()
 		<p>Subscribe to Googmonify Updates via RSS or Email here:  <a href="http://feeds.feedburner.com/Googmonify">http://feeds.feedburner.com/Googmonify</a></p>
 		<p>If you like Googmonify, then you might also like <a href="http://www.gara.com/projects/amazonify/">Amazonify</a> and <a href="http://www.gara.com/projects/bookmarkify/">Bookmarkify</a>, also by <a href="http://www.gara.com/">GARA Systems</a>.</p>
 	</div>
-<?
+<?php
 }
 
 // Add Options Page
